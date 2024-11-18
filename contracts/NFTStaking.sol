@@ -2,9 +2,10 @@
 
 pragma solidity ^0.8.4;
 
-import "./zar.sol";
+import "./Zar.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract NFTStaking is Ownable, IERC721Receiver {
 
