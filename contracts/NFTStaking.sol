@@ -29,7 +29,7 @@ contract NFTStaking is Ownable, IERC721Receiver {
   // maps tokenId to stake
   mapping(uint256 => Stake) public vault; 
 
-   constructor(ERC721Enumerable _nft, ZAR _token) { 
+   constructor(ERC721Enumerable _nft, ZAR _token) Ownable(msg.sender) { 
     nft = _nft;
     token = _token;
   }
