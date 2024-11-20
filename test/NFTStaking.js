@@ -17,7 +17,7 @@ describe ("NFTStaking", function () {
 
 
             const NFTStaking = await ethers.getContractFactory('NFTStaking');
-            nftStaking = await NFTStaking.deploy(nft, Ztoken);
+            nftStaking = await NFTStaking.deploy(nft.getAddress(), zToken.getAddress());
             await nftStaking.waitForDeployment();
 
         } catch (error) {
@@ -31,10 +31,7 @@ describe ("NFTStaking", function () {
 
     describe("Staking", function () {
         it("Total stake should start as zero", async function () {
-            expect(await nftStaking.totalStaked().to.equal(0));
-
-         
-
+            expect(await nftStaking.totalStaked()).to.equal(0);
     }); 
     })
 })
