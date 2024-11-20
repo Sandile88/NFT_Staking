@@ -1,17 +1,23 @@
 const { ethers } = require ("hardhat");
 
 describe ("NFTStaking", function () {
-    let nftStaking, owner;
+    let nftStaking, owner, nft, zToken;
 
     beforeEach(async () =>  {
         try {
             [owner] = await ethers.getSigners();
-            const NFTStaking = await ethers.getContractFactory('NFTStaking');
-            const nft = 
-            const token = 
+            // const nft = 
 
-            nftStaking = await NFTStaking.deploy(nft, token);
+
+            const ZAR = await ethers.getContractFactory('ZAR');
+            zToken = await ZAR.deploy();
+            await zToken.waitForDeployment();
+
+
+            const NFTStaking = await ethers.getContractFactory('NFTStaking');
+            nftStaking = await NFTStaking.deploy(nft, Ztoken);
             await nftStaking.waitForDeployment();
+
         } catch (error) {
             console.error("Failed: ", error);
             throw error;
