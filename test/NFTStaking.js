@@ -6,7 +6,9 @@ describe ("NFTStaking", function () {
     beforeEach(async () =>  {
         try {
             [owner] = await ethers.getSigners();
-            // const nft = 
+            const MockNFT = await ethers.getContractFactory('MockNFT');
+            nft = await MockNFT.deploy();
+            await nft.waitForDeployment();
 
 
             const ZAR = await ethers.getContractFactory('ZAR');
