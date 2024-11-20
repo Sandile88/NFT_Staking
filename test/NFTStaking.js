@@ -31,14 +31,10 @@ describe ("NFTStaking", function () {
 
     describe("Staking", function () {
         it("Total stake should start as zero", async function () {
+            expect(await nftStaking.totalStaked().to.equal(0));
 
-    });
+         
 
-        
+    }); 
     })
-
-
-
-
-
 })
