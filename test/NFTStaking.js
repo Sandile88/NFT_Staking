@@ -65,8 +65,20 @@ describe ("NFTStaking", function () {
 
 
     describe("Unstaking", function () {
-        it("Total stake should decrease correctly", async function () {
-            expect(await nftStaking.totalStaked()).to.equal(0);
+        it("Can't unstake NFTs that aren't staked", async function () {
+            const tokenIdsToStake = [0, 1, 2, 3, 4]; 
+            const tokenIdsNotStaked = [5, 6];
+
+    
+
+            for(const tokenId of tokenIdsToStake) {
+                await nft.mint(owner.getAddress(), tokenId);
+                await nft.approve(nftStaking.getAddress(), tokenId);
+            }
+            await nftStaking.stake(tokenIdsToStake);
+            expect(await nftStaking.totalStaked()).to.equal(tokenIdsToStake.length);
+
+            expect(nftStaking.unstake(tokenIdsNotStaked)).to.be.revertedWith("not an owner");
         });
 
 
