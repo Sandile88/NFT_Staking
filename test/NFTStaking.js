@@ -135,14 +135,20 @@ describe ("NFTStaking", function () {
     //     })
     // })
 
-    // describe("Events", async () => {
-    //     it("Should emit an event when staking", async function () {
-            
-    //     })
-    // })
+    describe("Events", function ()  {
+        it("Should emit an event when staking", async function () {
+            await nft.mint(owner.getAddress(), 1);
+            await nft.connect(owner).approve(nftStaking.getAddress(), 1);
+
+            await expect(nftStaking.connect(owner).stake([1]))
+            .to.emit(nftStaking, "NFTStaked")
+            .withArgs(owner.getAddress(), 1, await ethers.provider.getBlock("latest")
+            .then((block) => block.timestamp));            
+        })
+    })
 
 
-    describe("Different edge cases", async () => {
+    describe("Different edge cases", function ()  {
         let tokenId;
 
         beforeEach(async () => {
