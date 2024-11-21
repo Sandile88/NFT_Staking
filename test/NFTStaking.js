@@ -3,11 +3,11 @@ const { expect } = require("chai");
 
 
 describe ("NFTStaking", function () {
-    let nftStaking, owner, nft, zToken;
+    let nftStaking, owner, otherUser, nft, zToken;
 
     beforeEach(async () =>  {
         try {
-            [owner] = await ethers.getSigners();
+            [owner, otherUser] = await ethers.getSigners();
 
             const MockNFT = await ethers.getContractFactory('MockNFT');
             nft = await MockNFT.deploy();
@@ -100,4 +100,52 @@ describe ("NFTStaking", function () {
       
         });
     });
+
+
+    // describe("Rewards", async () => {
+    //     it("Rewards in a day", async function () {
+            
+    //     })
+    // })
+
+    // describe("Claiming", async () => {
+    //     it("Can claim rewards without unstaking", async function () {
+            
+    //     })
+    // })
+
+    // describe("Events", async () => {
+    //     it("Should emit an event when staking", async function () {
+            
+    //     })
+    // })
+
+
+    describe("Different edge cases", async () => {
+        let tokenId;
+
+        beforeEach(async () => {
+            tokenId = 1;
+
+            await nft.mint(owner.getAddress(), tokenId);
+            await nft.approve(nftStaking.getAddress(), tokenId);
+            await nftStaking.stake([tokenId]);
+        });
+
+
+        it("Should not double stake", async function () {
+            await expect(nftStaking.stake([tokenId])).to.be.revertedWith("not your token");
+        })
+
+        it("Only owner has access", async function () {
+            expect(nftStaking.connect(otherUser).claim([1])).to.be.rejectedWith("not an owner");
+            expect(nftStaking.connect(owner).claim([1])).to.not.be.reverted;
+        })
+    })
+
+
+
+
+
+
 })
