@@ -17,8 +17,6 @@ describe ("NFTStaking", function () {
             const ZAR = await ethers.getContractFactory('ZAR');
             zToken = await ZAR.deploy();
             await zToken.waitForDeployment();
-            // await zToken.transferOwnership(owner.address);
-
 
 
             const NFTStaking = await ethers.getContractFactory('NFTStaking');
@@ -107,9 +105,7 @@ describe ("NFTStaking", function () {
             await nftStaking.unstake([tokenId]);
 
             const checkOwner = await nft.ownerOf(tokenId)
-            expect(checkOwner).to.be.equal(owner.address);
-
-            
+            expect(checkOwner).to.be.equal(owner.address);  
         })
     });
 
@@ -170,40 +166,8 @@ describe ("NFTStaking", function () {
             await expect(nftStaking.connect(otherUser).claim([1])).to.be.revertedWith("not an owner");
 
             await expect(nftStaking.connect(owner).claim([1])).to.not.be.reverted;
-
-
-            // const earnedReward = await nftStaking.earningInfo(owner.getAddress(), [1]);
-            // const rewardAmount = earnedReward[0];
-
-            // const initialBalance = await nftStaking.balanceOf(owner.getAddress());
-
-            // await expect(nftStaking.connect(owner).claim([1]))
-            // .to.emit(nftStaking, "Claimed")
-            // .withArgs(owner.getAddress(), rewardAmount);
-
-            // const newBalance = await nftStaking.balanceOf(owner.getAddress());
-            // expect(newBalance).to.be.gte(initialBalance);
-           
         })
     })
-
-    // describe("Events", function ()  {
-    //     it("Should emit an event when staking", async function () {
-    //         await nft.mint(owner.getAddress(), 1);
-    //         await nft.connect(owner).approve(nftStaking.getAddress(), 1);
-
-    //         const txn = await nftStaking.connect(owner).stake([1]);
-    //         const record = await txn.wait();
-
-    //         const blockTimestamp = record.blockTimeStamp;
-
-    //         await expect(txn) 
-    //         .to.emit(nftStaking, "NFTStaked")
-    //         .withArgs(owner.getAddress(), 1, blockTimeStamp);
-    //         // .then((block) => block.timestamp));            
-    //     })
-    // })
-
 
 
     describe("Different edge cases", function ()  {
@@ -227,11 +191,5 @@ describe ("NFTStaking", function () {
             expect(nftStaking.connect(owner).claim([1])).to.not.be.reverted;
         })
 
-
-        // it("Should not be a zero token array", async function () {
-        //     await expect(nftStaking.connect(owner).stake([])).to.be.revertedWith("INvalid")
-
-            
-        // })
     })
 });
