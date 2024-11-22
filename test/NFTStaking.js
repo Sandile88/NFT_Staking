@@ -96,9 +96,21 @@ describe ("NFTStaking", function () {
             expect(await nftStaking.totalStaked()).to.equal(tokenIdsToStake.length - tokenIdsToUnstake.length);
 
 
-
-      
         });
+
+
+        it("NFTs should return to owner", async function () {
+            const tokenId = 1;
+            await nft.mint(owner.getAddress(), 1);
+            await nft.approve(nftStaking.getAddress(), tokenId);
+            await nftStaking.stake([tokenId]);
+            await nftStaking.unstake([tokenId]);
+
+            const checkOwner = await nft.ownerOf(tokenId)
+            expect(checkOwner).to.be.equal(owner.address);
+
+            
+        })
     });
 
 
@@ -145,36 +157,35 @@ describe ("NFTStaking", function () {
         });
     });
 
-    // describe("Claiming", function () {
-    //     it("Can claim rewards without unstaking", async function () {
+    describe("Claiming", function () {
+        it("Should not allow claiming rewards for NFTs you don't own", async function () {
 
-    //         await nft.mint(owner.getAddress(), 1);
-    //         await nft.connect(owner).approve(nftStaking.getAddress(), 1);
-    //         await nftStaking.connect(owner).stake([1]);
+            await nft.mint(owner.getAddress(), 1);
+            await nft.connect(owner).approve(nftStaking.getAddress(), 1);
+            await nftStaking.connect(owner).stake([1]);
 
-    //         await network.provider.send("evm_increaseTime", [86400]);
-    //         await network.provider.send("evm_mine");
+            await network.provider.send("evm_increaseTime", [86400]);
+            await network.provider.send("evm_mine");
 
+            await expect(nftStaking.connect(otherUser).claim([1])).to.be.revertedWith("not an owner");
 
-    //         const earnedReward = await nftStaking.earningInfo(owner.getAddress(), [1]);
-    //         const rewardAmount = earnedReward[0];
-
-    //         const initialBalance = await nftStaking.balanceOf(owner.getAddress());
-
-    //         await expect(nftStaking.connect(owner).claim([1]))
-    //         .to.emit(nftStaking, "Claimed")
-    //         .withArgs(owner.getAddress(), rewardAmount);
-
-    //         const newBalance = await nftStaking.balanceOf(owner.getAddress());
-    //         expect(newBalance).to.be.gte(initialBalance);
+            await expect(nftStaking.connect(owner).claim([1])).to.not.be.reverted;
 
 
+            // const earnedReward = await nftStaking.earningInfo(owner.getAddress(), [1]);
+            // const rewardAmount = earnedReward[0];
 
+            // const initialBalance = await nftStaking.balanceOf(owner.getAddress());
 
+            // await expect(nftStaking.connect(owner).claim([1]))
+            // .to.emit(nftStaking, "Claimed")
+            // .withArgs(owner.getAddress(), rewardAmount);
 
+            // const newBalance = await nftStaking.balanceOf(owner.getAddress());
+            // expect(newBalance).to.be.gte(initialBalance);
            
-    //     })
-    // })
+        })
+    })
 
     // describe("Events", function ()  {
     //     it("Should emit an event when staking", async function () {
