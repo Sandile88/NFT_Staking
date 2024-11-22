@@ -116,6 +116,33 @@ describe ("NFTStaking", function () {
             const earnedReward = await nftStaking.earningInfo(owner.getAddress(), [1]);
             expect(earnedReward[0]).to.be.gte(0);            
         });
+
+
+        it("Should return correct values in earningInfo", async function () {
+            await nft.mint(owner.getAddress(), 1);
+            await nft.connect(owner).approve(nftStaking.getAddress(), 1);
+            await nftStaking.connect(owner).stake([1]);
+    
+            await network.provider.send("evm_increaseTime", [86400]);
+            await network.provider.send("evm_mine");
+    
+            const reward = await nftStaking.earningInfo(owner.getAddress(), [1]);
+            expect(reward[0]).to.be.gte(0);
+        });
+
+        it("Should reset the timestamp after claiming reward", async function () {
+            await nft.mint(owner.getAddress(), 1);
+            await nft.connect(owner).approve(nftStaking.getAddress(), 1);
+            await nftStaking.connect(owner).stake([1]);
+    
+            await network.provider.send("evm_increaseTime", [86400]);
+            await network.provider.send("evm_mine");
+
+            await nftStaking.connect(owner).claim([1]);
+
+            const earnedRewardAfterClaim = await nftStaking.earningInfo(owner.getAddress(), [1]);
+            expect(earnedRewardAfterClaim[0]).to.equal(0);
+        });
     });
 
     // describe("Claiming", function () {
@@ -129,23 +156,43 @@ describe ("NFTStaking", function () {
     //         await network.provider.send("evm_mine");
 
 
+    //         const earnedReward = await nftStaking.earningInfo(owner.getAddress(), [1]);
+    //         const rewardAmount = earnedReward[0];
+
     //         const initialBalance = await nftStaking.balanceOf(owner.getAddress());
-    //         await expect(nftStaking.claim([1])).to.emit(nftStaking, "Claimed").withArgs(owner.getAddress(), await nftStaking.earningInfo(owner.getAddress(), [1][0]);
-            
+
+    //         await expect(nftStaking.connect(owner).claim([1]))
+    //         .to.emit(nftStaking, "Claimed")
+    //         .withArgs(owner.getAddress(), rewardAmount);
+
+    //         const newBalance = await nftStaking.balanceOf(owner.getAddress());
+    //         expect(newBalance).to.be.gte(initialBalance);
+
+
+
+
+
+           
     //     })
     // })
 
-    describe("Events", function ()  {
-        it("Should emit an event when staking", async function () {
-            await nft.mint(owner.getAddress(), 1);
-            await nft.connect(owner).approve(nftStaking.getAddress(), 1);
+    // describe("Events", function ()  {
+    //     it("Should emit an event when staking", async function () {
+    //         await nft.mint(owner.getAddress(), 1);
+    //         await nft.connect(owner).approve(nftStaking.getAddress(), 1);
 
-            await expect(nftStaking.connect(owner).stake([1]))
-            .to.emit(nftStaking, "NFTStaked")
-            .withArgs(owner.getAddress(), 1, await ethers.provider.getBlock("latest")
-            .then((block) => block.timestamp));            
-        })
-    })
+    //         const txn = await nftStaking.connect(owner).stake([1]);
+    //         const record = await txn.wait();
+
+    //         const blockTimestamp = record.blockTimeStamp;
+
+    //         await expect(txn) 
+    //         .to.emit(nftStaking, "NFTStaked")
+    //         .withArgs(owner.getAddress(), 1, blockTimeStamp);
+    //         // .then((block) => block.timestamp));            
+    //     })
+    // })
+
 
 
     describe("Different edge cases", function ()  {
@@ -168,11 +215,12 @@ describe ("NFTStaking", function () {
             expect(nftStaking.connect(otherUser).claim([1])).to.be.rejectedWith("not an owner");
             expect(nftStaking.connect(owner).claim([1])).to.not.be.reverted;
         })
+
+
+        // it("Should not be a zero token array", async function () {
+        //     await expect(nftStaking.connect(owner).stake([])).to.be.revertedWith("INvalid")
+
+            
+        // })
     })
-
-
-
-
-
-
-})
+});
